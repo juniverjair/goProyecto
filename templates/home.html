@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0 minimal-ui"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+
+
+    <title>Traductor Ciudad Destino</title>
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <a class="navbar-brand" href="#">Traductor por Ciudades</a>
+
+
+</nav>
+
+<div class="container">
+
+    <form>
+
+        <div class="form-group">
+            <label for="original">Texto Original</label>
+            <textarea class="form-control" id="original" name="original" placeholder="Ingrese texto a traducir ..." rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="pais">Pais Destino</label>
+            <select id="pais" name="pais" class="form-control">
+                <option selected>Elija un pais ...</option>
+            </select>
+        </div>
+
+        <button type="button" onclick="traducir()" class="btn btn-primary">Traducir</button>
+
+        </br>
+        </br>
+
+        <div class="form-group">
+            <label for="final">Texto Traducido</label>
+            <textarea class="form-control" id="final" name="final" rows="3"></textarea>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    $( document ).ready(function() {
+
+            $.ajax({
+                url: '/getContries'
+                , type: 'GET'
+                , dataType: 'json'
+                , success: function (json) {
+                    $.each(json, function (i, item) {
+                        console.log(item)
+                        $('#pais').append($('<option>', {
+                            value: item.alpha2 ,
+                            text: item.English
+                        }));
+                    });
+                }
+            });
+
+        $('#pais').select2();
+
+    });
+
+
+    function traducir() {
+        original = document.getElementById("original").value;
+        pais = document.getElementById("pais").value;
+
+        $.ajax({
+            url: '/getTranslate'
+            , type: 'GET'
+            , data: {
+                    text: original,
+                    lang: pais,
+            }
+            , dataType: 'json'
+            , success: function (json) {
+                document.getElementById("final").value = json.Text;
+            }
+        });
+
+    }
+
+
+</script>
+
+</body>
+</html>
